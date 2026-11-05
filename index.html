@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Speaking Topic Selection | Dhofar University</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="bg-blue-900 text-white shadow-md py-6 px-4">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight">Dhofar University - Centre for Preparatory Studies</h1>
+                <p class="text-blue-200 text-sm mt-1">Level 1 Final Speaking Exam - Topic Selection Portal</p>
+            </div>
+            <div id="student-badge" class="hidden bg-blue-800 border border-blue-700 px-4 py-2 rounded-lg text-sm flex items-center gap-3 shadow-inner">
+                <div>
+                    <p class="text-xs text-blue-300 font-medium">Logged in as:</p>
+                    <p id="badge-name" class="font-semibold text-white"></p>
+                </div>
+                <button onclick="logoutStudent()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded transition">Change</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto px-4 py-8 w-full flex-grow">
+
+        <!-- Student Login Modal / Card -->
+        <div id="login-section" class="max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 p-8 mb-8">
+            <h2 class="text-xl font-bold text-blue-900 mb-2">Student Verification</h2>
+            <p class="text-slate-500 text-sm mb-6">Please enter your full name and student ID number before selecting your speaking topic. Each student can select only one topic.</p>
+            
+            <form id="student-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                    <input type="text" id="student-name" required placeholder="e.g. Ahmed Ali Al-Shanfari" 
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-none transition text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Student ID Number</label>
+                    <input type="text" id="student-id" required placeholder="e.g. 20231234" 
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:outline-none transition text-sm">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl shadow-md transition duration-200">
+                    Proceed to Topics
+                </button>
+            </form>
+        </div>
+
+        <!-- Topics Section (Hidden until login) -->
+        <div id="topics-section" class="hidden">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900">Available Speaking Topics</h2>
+                    <p class="text-slate-500 text-sm">Select one topic below. Once chosen, it will be locked instantly.</p>
+                </div>
+                <div class="bg-blue-50 text-blue-800 border border-blue-200 text-xs font-medium px-3 py-1.5 rounded-lg">
+                    Unit 5: Agree or Disagree & Environmental Issues
+                </div>
+            </div>
+
+            <!-- Topics Grid -->
+            <div id="topics-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Dynamically populated topics -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        &copy; 2026 Dhofar University &bull; Level 1 Final Speaking Exam Management System
+    </footer>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 text-center animate-in fade-in zoom-in duration-200">
+            <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">?</div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Confirm Topic Selection</h3>
+            <p id="confirm-topic-text" class="text-slate-600 text-sm mb-6 px-2"></p>
+            <div class="flex gap-3">
+                <button onclick="closeModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl transition text-sm">Cancel</button>
+                <button onclick="confirmSelection()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition text-sm shadow-md">Confirm & Lock</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Connected to your Google Apps Script Web App Backend
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxs8cWfJttnQTRSMqGXmP2J_DgF7Wy0v-JjjwtoJP22ZeOmUQXqu6r6bNlLcr4D8aph/exec";
+
+        // Topic List based on official Level 1 document specifications
+        const topics = [
+            { id: 11, category: "Unit 4 / Environment", text: "What are the causes and effects of endangering animals?" },
+            { id: 12, category: "Unit 4 / Environment", text: "What are the causes and effects of overhunting and overfishing?" },
+            { id: 13, category: "Unit 4 / Environment", text: "What are the causes and effects of Food waste?" },
+            { id: 14, category: "Unit 4 / Environment", text: "What are the causes and effects of Desertification?" },
+            { id: 15, category: "Unit 5: Agree or Disagree", text: "Sports should be compulsory for all students in schools. Agree or disagree?" },
+            { id: 16, category: "Unit 5: Agree or Disagree", text: "Winning in sports is more important than participating. Agree or disagree?" },
+            { id: 17, category: "Unit 5: Agree or Disagree", text: "Sports celebrities shouldn't do advertising. Agree or disagree?" },
+            { id: 18, category: "Unit 5: Agree or Disagree", text: "Dhofar University should have a gym on campus for students to exercise. Agree or disagree?" },
+            { id: 19, category: "Unit 5: Agree or Disagree", text: "It is more important for athletes to represent their countries than to make money. Agree or disagree?" },
+            { id: 20, category: "Unit 5: Agree or Disagree", text: "Students who take part in sports activities get high grades in exams. Agree or disagree?" },
+            { id: 21, category: "Unit 5: Agree or Disagree", text: "Team sports are better than individual sports. Agree or disagree?" }
+        ];
+
+        let currentUser = { name: "", id: "" };
+        let selectedTopicId = null;
+        let takenTopics = {}; 
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const name = document.getElementById('student-name').value.trim();
+            const id = document.getElementById('student-id').value.trim();
+            
+            if (!name || !id) return;
+
+            currentUser = { name, id };
+            document.getElementById('badge-name').textContent = `${name} (${id})`;
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('student-badge').classList.remove('hidden');
+            document.getElementById('topics-section').classList.remove('hidden');
+
+            fetchTopicsStatus();
+        }
+
+        function logoutStudent() {
+            currentUser = { name: "", id: "" };
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('student-badge').classList.add('hidden');
+            document.getElementById('topics-section').classList.add('hidden');
+            document.getElementById('student-form').reset();
+        }
+
+        async function fetchTopicsStatus() {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                takenTopics = data;
+                renderTopics();
+            } catch (err) {
+                console.error("Error fetching topics:", err);
+                renderTopics();
+            }
+        }
+
+        function renderTopics() {
+            const container = document.getElementById('topics-container');
+            container.innerHTML = "";
+
+            topics.forEach(topic => {
+                const isTaken = takenTopics[topic.id];
+                const card = document.createElement('div');
+                
+                if (isTaken) {
+                    card.className = "bg-slate-50 border border-slate-200 rounded-2xl p-5 flex flex-col justify-between opacity-75";
+                    card.innerHTML = `
+                        <div>
+                            <span class="text-xs font-semibold text-slate-400 bg-slate-200 px-2.5 py-1 rounded-md">Topic #${topic.id} &bull; ${topic.category}</span>
+                            <p class="text-slate-500 font-medium mt-3 text-sm">${topic.text}</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-xs">
+                            <span class="text-red-600 font-semibold flex items-center gap-1">🔒 Already Taken</span>
+                            <span class="text-slate-500 truncate max-w-[180px]">By: ${isTaken.name}</span>
+                        </div>
+                    `;
+                } else {
+                    card.className = "bg-white border border-slate-200 hover:border-blue-300 rounded-2xl p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition duration-200";
+                    card.innerHTML = `
+                        <div>
+                            <span class="text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md">Topic #${topic.id} &bull; ${topic.category}</span>
+                            <p class="text-slate-800 font-medium mt-3 text-sm">${topic.text}</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex justify-end">
+                            <button onclick="promptSelect(${topic.id})" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-xl text-xs transition shadow-sm">
+                                Select Topic
+                            </button>
+                        </div>
+                    `;
+                }
+                container.appendChild(card);
+            });
+        }
+
+        function promptSelect(topicId) {
+            selectedTopicId = topicId;
+            const topic = topics.find(t => t.id === topicId);
+            document.getElementById('confirm-topic-text').innerHTML = `Are you sure you want to select <b>Topic #${topic.id}</b>:<br><span class="text-xs text-slate-500">"${topic.text}"</span>`;
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+            selectedTopicId = null;
+        }
+
+        async function confirmSelection() {
+            closeModal();
+            const topic = topics.find(t => t.id === selectedTopicId);
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        topicId: selectedTopicId,
+                        topicText: topic.text,
+                        studentName: currentUser.name,
+                        studentId: currentUser.id
+                    })
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    alert("Topic successfully registered and locked!");
+                    fetchTopicsStatus();
+                } else {
+                    alert(result.message || "Error selecting topic.");
+                    fetchTopicsStatus();
+                }
+            } catch (err) {
+                alert("Network error. Please try again.");
+            }
+        }
+    </script>
+</body>
+</html>
