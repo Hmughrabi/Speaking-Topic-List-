@@ -18,7 +18,7 @@
         <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
                 <h1 class="text-2xl font-bold tracking-tight">Dhofar University - Centre for Preparatory Studies</h1>
-                <p class="text-blue-200 text-sm mt-1">Level 1 Final Speaking Exam - Topic Selection Portal</p>
+                <p class="text-blue-200 text-sm mt-1">Level 1 Final Speaking Exam - Topic Selection Portal (Units 4 & 5)</p>
             </div>
             <div id="student-badge" class="hidden bg-blue-800 border border-blue-700 px-4 py-2 rounded-lg text-sm flex items-center gap-3 shadow-inner">
                 <div>
@@ -63,7 +63,7 @@
                     <p class="text-slate-500 text-sm">Select one topic below. Once chosen, it will be locked instantly.</p>
                 </div>
                 <div class="bg-blue-50 text-blue-800 border border-blue-200 text-xs font-medium px-3 py-1.5 rounded-lg">
-                    Unit 5: Agree or Disagree & Environmental Issues
+                    Units 4 & 5: Cause/Effect & Sports
                 </div>
             </div>
 
@@ -97,19 +97,36 @@
         // Connected to your Google Apps Script Web App Backend
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxs8cWfJttnQTRSMqGXmP2J_DgF7Wy0v-JjjwtoJP22ZeOmUQXqu6r6bNlLcr4D8aph/exec";
 
-        // Topic List based on official Level 1 document specifications
+        // Complete official list of 28 topics (Units 4 & 5)
         const topics = [
-            { id: 11, category: "Unit 4 / Environment", text: "What are the causes and effects of endangering animals?" },
-            { id: 12, category: "Unit 4 / Environment", text: "What are the causes and effects of overhunting and overfishing?" },
-            { id: 13, category: "Unit 4 / Environment", text: "What are the causes and effects of Food waste?" },
-            { id: 14, category: "Unit 4 / Environment", text: "What are the causes and effects of Desertification?" },
-            { id: 15, category: "Unit 5: Agree or Disagree", text: "Sports should be compulsory for all students in schools. Agree or disagree?" },
-            { id: 16, category: "Unit 5: Agree or Disagree", text: "Winning in sports is more important than participating. Agree or disagree?" },
-            { id: 17, category: "Unit 5: Agree or Disagree", text: "Sports celebrities shouldn't do advertising. Agree or disagree?" },
-            { id: 18, category: "Unit 5: Agree or Disagree", text: "Dhofar University should have a gym on campus for students to exercise. Agree or disagree?" },
-            { id: 19, category: "Unit 5: Agree or Disagree", text: "It is more important for athletes to represent their countries than to make money. Agree or disagree?" },
-            { id: 20, category: "Unit 5: Agree or Disagree", text: "Students who take part in sports activities get high grades in exams. Agree or disagree?" },
-            { id: 21, category: "Unit 5: Agree or Disagree", text: "Team sports are better than individual sports. Agree or disagree?" }
+            { id: 1, category: "Unit 4 / Cause and Effect", text: "What are the causes and effects of air pollution?" },
+            { id: 2, category: "Unit 4 / Cause and Effect", text: "What are the causes and effects of water pollution?" },
+            { id: 3, category: "Unit 4 / Cause and Effect", text: "What are the causes and effects of forest fires?" },
+            { id: 4, category: "Unit 4 / Cause and Effect", text: "What are the causes and effects of climate change?" },
+            { id: 5, category: "Unit 4 / Cause and Effect", text: "What are the causes and effects of ice/glacier melting?" },
+            { id: 6, category: "Unit 4 / Cause and Effect", text: "What are the causes and effects of plastic use on the environment?" },
+            { id: 7, category: "Unit 4 / Cause and Effect", text: "What are the causes and effects of animal extinction?" },
+            { id: 8, category: "Unit 4 / Cause and Effect", text: "What are the causes and effects of global warming?" },
+            { id: 9, category: "Unit 4 / Cause and Effect", text: "What are the causes and effects of cyclones?" },
+            { id: 10, category: "Unit 4 / Cause and Effect", text: "What are the causes and effects of deforestation?" },
+            { id: 11, category: "Unit 4 / Cause and Effect", text: "What are the causes and effects of endangering animals?" },
+            { id: 12, category: "Unit 4 / Cause and Effect", text: "What are the causes and effects of overhunting and overfishing?" },
+            { id: 13, category: "Unit 4 / Cause and Effect", text: "What are the causes and effects of Food waste?" },
+            { id: 14, category: "Unit 4 / Cause and Effect", text: "What are the causes and effects of Desertification?" },
+            { id: 15, category: "Unit 5 / Agree or Disagree", text: "Sports should be compulsory for all students in schools. Agree or disagree?" },
+            { id: 16, category: "Unit 5 / Agree or Disagree", text: "Winning in sports is more important than participating. Agree or disagree?" },
+            { id: 17, category: "Unit 5 / Agree or Disagree", text: "Sports celebrities shouldn’t do advertising. Agree or disagree?" },
+            { id: 18, category: "Unit 5 / Agree or Disagree", text: "Dhofar University should have a gym on campus for students to exercise. Agree or disagree?" },
+            { id: 19, category: "Unit 5 / Agree or Disagree", text: "It is more important for athletes to represent their countries than to make money. Agree or disagree?" },
+            { id: 20, category: "Unit 5 / Agree or Disagree", text: "Students who take part in sports activities get high grades in exams. Agree or disagree?" },
+            { id: 21, category: "Unit 5 / Agree or Disagree", text: "Team sports are better than individual sports. Agree or disagree?" },
+            { id: 22, category: "Unit 5 / Agree or Disagree", text: "Professional athletes should be paid high salaries. Agree or disagree?" },
+            { id: 23, category: "Unit 5 / Agree or Disagree", text: "Children should be banned from participating in sports. Agree or disagree?" },
+            { id: 24, category: "Unit 5 / Agree or Disagree", text: "People shouldn’t watch dangerous sports for entertainment. Agree or disagree?" },
+            { id: 25, category: "Unit 5 / Agree or Disagree", text: "Hosting international sports events like the World Cup is good for the country. Agree or disagree?" },
+            { id: 26, category: "Unit 5 / Agree or Disagree", text: "Professional players should not be paid more than doctors, nurses, police officers and teachers. Agree or disagree?" },
+            { id: 27, category: "Unit 5 / Agree or Disagree", text: "Parents should support their children if they want to do a career in sports. Agree or disagree?" },
+            { id: 28, category: "Unit 5 / Agree or Disagree", text: "Female athletes should be paid the same as male athletes in the same sport. Agree or disagree?" }
         ];
 
         let currentUser = { name: "", id: "" };
